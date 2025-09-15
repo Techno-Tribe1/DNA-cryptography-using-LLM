@@ -53,21 +53,21 @@ def test_simple_crypto():
         crypto = SimpleDNACrypto()
         
         # Test basic functionality
-        test_message = "Hello World!"
+        test_message = "Hello World"
         print(f"Testing: '{test_message}'")
         
         # Encrypt
         result = crypto.encrypt(test_message)
         print(f"✅ Encryption successful")
         print(f"   DNA length: {len(result['dna_sequence'])}")
-        print(f"   Binary length: {len(result['binary_data'])}")
+        print(f"   Binary length: {len(result['binary_key'])}")
         
         # Decrypt
-        decrypted = crypto.decrypt(dna_sequence=result['dna_sequence'])
-        print(f"✅ Decryption successful: '{decrypted}'")
+        decrypted = crypto.decrypt(binary_key=result['binary_key'])
+        print(f"✅ Decryption successful: '{decrypted['decrypted_text']}'")
         
-        # Verify
-        if test_message == decrypted:
+        # Verifys
+        if test_message == decrypted['decrypted_text']:
             print("🎉 Perfect match! Simple crypto working correctly.")
             return True
         else:
