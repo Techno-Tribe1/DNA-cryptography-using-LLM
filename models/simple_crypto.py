@@ -139,7 +139,7 @@ def interactive_dna_binary_crypto():
     print("=" * 60)
     
     # Initialize the system
-    crypto = DNABinaryKeyCrypto()
+    crypto = SimpleDNACrypto()
     
     print(f"\n🔬 How it works:")
     print(f"   Encryption: Text → DNA Sequence → Binary Key")
@@ -148,18 +148,17 @@ def interactive_dna_binary_crypto():
     
     while True:
         print("\n" + "="*50)
-        print("🎯 MAIN MENU:")
-        print("1. 🔒 ENCRYPT text to binary key")
-        print("2. 🔓 DECRYPT binary key to text")
-        print("3. 📋 Show supported characters")
-        print("4. 🧪 Run test suite")
-        print("5. 💾 Save system")
-        print("6. 📂 Load system")
-        print("7. 🔬 Show DNA mapping (first 10)")
-        print("8. ❌ EXIT")
+        print("MAIN MENU:")
+        print("1.ENCRYPT text to binary key")
+        print("2. DECRYPT binary key to text")
+        print("3. Show supported characters")
+        print("4. Run test suite")
+        print("5. Save system")
+        print("6. Show DNA mapping (first 10)")
+        print("7. EXIT")
         
         try:
-            choice = input("\n👉 Enter choice (1-8): ").strip()
+            choice = input("\n👉 Enter choice (1-7): ").strip()
             
             if choice == '1':
                 # ENCRYPT TEXT TO BINARY KEY
@@ -170,7 +169,7 @@ def interactive_dna_binary_crypto():
                     print("❌ Empty text!")
                     continue
                 
-                result = crypto.encrypt_to_binary_key(text)
+                result = crypto.encrypt(text)
                 
                 print(f"\n✅ ENCRYPTION SUCCESSFUL!")
                 print(f"📄 Original text: '{result['original_text']}'")
@@ -193,7 +192,7 @@ def interactive_dna_binary_crypto():
                     continue
                 
                 try:
-                    result = crypto.decrypt_from_binary_key(binary_key)
+                    result = crypto.decrypt(binary_key)
                     
                     print(f"\n✅ DECRYPTION SUCCESSFUL!")
                     print(f"🔑 Binary key: {result['binary_key']}")
@@ -306,7 +305,7 @@ def quick_demo():
     print("🧬 Quick DNA Binary Key Demo")
     print("=" * 40)
     
-    crypto = DNABinaryKeyCrypto()
+    crypto = SimpleDNACrypto()
     
     test_messages = [
         "Hello World",
@@ -318,11 +317,11 @@ def quick_demo():
         print(f"\n🧪 Test {i}: '{message}'")
         
         # Encrypt to binary key
-        encrypt_result = crypto.encrypt_to_binary_key(message)
+        encrypt_result = crypto.encrypt(message)
         binary_key = encrypt_result['binary_key']
         
         # Decrypt from binary key
-        decrypt_result = crypto.decrypt_from_binary_key(binary_key)
+        decrypt_result = crypto.decrypt(binary_key)
         decrypted = decrypt_result['decrypted_text']
         
         # Show results
