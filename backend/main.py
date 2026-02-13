@@ -51,10 +51,10 @@ class SimpleDNACrypto:
             encryption_key = hashlib.sha256(str(seed).encode()).digest()
         self.encryption_key = encryption_key
         
-        print(f"✅ DNA Binary Crypto initialized (Optimized)")
-        print(f"📊 Supported characters: {len(self.supported_chars)}")
-        print(f"🧬 DNA triplets available: {len(self.dna_triplets)}")
-        print(f"🔐 Encryption layer: Enabled")
+        pass
+        pass
+        pass
+        pass
     
     def _xor_encrypt(self, binary_string):
         """Apply XOR encryption to binary string"""
