@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNA Cryptography System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-box h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .result-item label {
+            font-weight: 600;
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .result-item .value {
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            color: #333;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            padding: 10px 15px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-item .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .stat-item .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #c33;
+            margin-top: 20px;
+        }
+
+        .success {
+            background: #efe;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3c3;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .info-section {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .info-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .char-list {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .mapping-table th,
+        .mapping-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .mapping-table th {
+            background: #667eea;
+            color: white;
+        }
+
+        .mapping-table tr:hover {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧬 DNA Cryptography System</h1>
+            <p>Text → DNA Sequence → Binary Key</p>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('encrypt')">🔒 Encrypt</button>
+                <button class="tab" onclick="switchTab('decrypt')">🔓 Decrypt</button>
+                <button class="tab" onclick="switchTab('info')">ℹ️ Info</button>
+            </div>
+
+            <!-- Encrypt Tab -->
+            <div id="encrypt" class="tab-content active">
+                <div class="info-section">
+                    <h3>How Encryption Works</h3>
+                    <p>Enter your text below. It will be converted to DNA sequences, then to a compressed binary key (Base64 format).</p>
+                    <p><strong>⚡ Optimized:</strong> Binary keys are now ~33% smaller and encrypted with XOR!</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="encrypt-text">Enter Text to Encrypt:</label>
+                    <textarea id="encrypt-text" placeholder="Type your message here..."></textarea>
+                </div>
+
+                <button class="btn" onclick="encryptText()">🔒 Encrypt Text</button>
+
+                <div id="encrypt-result"></div>
+            </div>
+
+            <!-- Decrypt Tab -->
+            <div id="decrypt" class="tab-content">
+                <div class="info-section">
+                    <h3>How Decryption Works</h3>
+                    <p>Paste your compressed key (Base64) or binary key below. It will be converted back to DNA sequences, then to text.</p>
+                    <p><strong>Accepts:</strong> Base64 compressed keys (new format) or binary keys (old format)</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="decrypt-key">Enter Key (Base64 or Binary):</label>
+                    <textarea id="decrypt-key" placeholder="Paste compressed key (Base64) or binary key (0s and 1s) here"></textarea>
+                </div>
+
+                <button class="btn" onclick="decryptBinary()">🔓 Decrypt Binary Key</button>
+
+                <div id="decrypt-result"></div>
+            </div>
+
+            <!-- Info Tab -->
+            <div id="info" class="tab-content">
+                <div class="info-section">
+                    <h3>Supported Characters</h3>
+                    <p>Total: <span id="char-count">Loading...</span> characters</p>
+                    <div class="char-list" id="char-list">Loading...</div>
+                </div>
+
+                <div class="info-section">
+                    <h3>DNA Mapping (First 10 Characters)</h3>
+                    <table class="mapping-table" id="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>Character</th>
+                                <th>DNA Triplet</th>
+                                <th>Binary</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mapping-body">
+                            <tr><td colspan="3">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button class="btn" onclick="loadInfo()">🔄 Refresh Info</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://YOUR-APP-NAME.onrender.com/api'; // ← Replace with your Render URL after deploying backend
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Load info when info tab is opened
+            if (tabName === 'info') {
+                loadInfo();
+            }
+        }
+
+        // Encrypt text
+        async function encryptText() {
+            const text = document.getElementById('encrypt-text').value.trim();
+            const resultDiv = document.getElementById('encrypt-result');
+
+            if (!text) {
+                resultDiv.innerHTML = '<div class="error">⚠️ Please enter text to encrypt!</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="loading">⏳ Encrypting...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/encrypt`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const result = data.data;
+                    let html = '<div class="result-box">';
+                    html += '<h3>✅ Encryption Successful!</h3>';
+                    
+                    html += '<div class="result-item">';
+                    html += '<label>Original Text:</label>';
+                    html += `<div class="value">${escapeHtml(result.original_text)}</div>`;
+                    html += '</div>';
+
+                    if (result.original_text !== result.filtered_text) {
+                        html += '<div class="result-item">';
+                        html += '<label>Filtered Text (unsupported chars → space):</label>';
+                        html += `<div class="value">${escapeHtml(result.filtered_text)}</div>`;
+                        html += '</div>';
+                    }
+
+                    html += '<div class="result-item">';
+                    html += '<label>DNA Sequence:</label>';
+                    html += `<div class="value">${result.dna_sequence}</div>`;
+                    html += '</div>';
+
+                    if (result.original_binary_key) {
+                        html += '<div class="result-item">';
+                        html += '<label>Original Binary Key:</label>';
+                        html += `<div class="value" style="font-family: monospace; word-break: break-all;">${result.original_binary_key}</div>`;
+                        html += '</div>';
+                    }
+
+                    html += '<div class="result-item">';
+                    html += '<label>Compressed Key (Base64):</label>';
+                    html += `<div class="value" style="font-size: 1.1em; font-weight: bold; color: #667eea;">${result.binary_key}</div>`;
+                    html += '</div>';
+
+                    if (result.original_binary_length) {
+                        html += '<div class="result-item">';
+                        html += '<label>Compression Info:</label>';
+                        html += `<div class="value">Original: ${result.original_binary_length} bits → Compressed: ${result.compressed_length} chars (${result.compression_ratio}% smaller)</div>`;
+                        html += '</div>';
+                    }
+
+                    html += '<div class="stats">';
+                    html += `<div class="stat-item"><div class="stat-label">Text Length</div><div class="stat-value">${result.stats.text_length}</div></div>`;
+                    html += `<div class="stat-item"><div class="stat-label">DNA Length</div><div class="stat-value">${result.stats.dna_length}</div></div>`;
+                    html += `<div class="stat-item"><div class="stat-label">Original Binary</div><div class="stat-value">${result.stats.binary_length} bits</div></div>`;
+                    if (result.stats.compressed_binary_length) {
+                        html += `<div class="stat-item"><div class="stat-label">Compressed</div><div class="stat-value">${result.stats.compressed_binary_length} chars</div></div>`;
+                    }
+                    html += `<div class="stat-item"><div class="stat-label">Size Reduction</div><div class="stat-value">${result.stats.size_reduction || 'N/A'}</div></div>`;
+                    html += `<div class="stat-item"><div class="stat-label">Triplets Used</div><div class="stat-value">${result.stats.triplets_used}</div></div>`;
+                    html += '</div>';
+
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${escapeHtml(data.error)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Connection Error: ${escapeHtml(error.message)}<br>Make sure the API server is running on http://localhost:5000</div>`;
+            }
+        }
+
+        // Decrypt binary key
+        async function decryptBinary() {
+            const binaryKey = document.getElementById('decrypt-key').value.trim();
+            const resultDiv = document.getElementById('decrypt-result');
+
+            if (!binaryKey) {
+                resultDiv.innerHTML = '<div class="error">⚠️ Please enter key to decrypt!</div>';
+                return;
+            }
+
+            // Accept both base64 and binary formats (validation done on server)
+
+            resultDiv.innerHTML = '<div class="loading">⏳ Decrypting...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/decrypt`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ binary_key: binaryKey })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const result = data.data;
+                    let html = '<div class="result-box">';
+                    html += '<h3>✅ Decryption Successful!</h3>';
+                    
+                    html += '<div class="result-item">';
+                    html += '<label>Decrypted Text:</label>';
+                    html += `<div class="value" style="font-size: 1.2em; font-weight: bold; color: #667eea;">${escapeHtml(result.decrypted_text)}</div>`;
+                    html += '</div>';
+
+                    if (result.compressed_key) {
+                        html += '<div class="result-item">';
+                        html += '<label>Compressed Key (Base64):</label>';
+                        html += `<div class="value">${result.compressed_key}</div>`;
+                        html += '</div>';
+                    }
+
+                    html += '<div class="result-item">';
+                    html += '<label>DNA Sequence:</label>';
+                    html += `<div class="value">${result.dna_sequence}</div>`;
+                    html += '</div>';
+
+                    html += '<div class="stats">';
+                    if (result.stats.compressed_length) {
+                        html += `<div class="stat-item"><div class="stat-label">Compressed Length</div><div class="stat-value">${result.stats.compressed_length} chars</div></div>`;
+                    }
+                    html += `<div class="stat-item"><div class="stat-label">Binary Length</div><div class="stat-value">${result.stats.binary_length} bits</div></div>`;
+                    html += `<div class="stat-item"><div class="stat-label">DNA Length</div><div class="stat-value">${result.stats.dna_length}</div></div>`;
+                    html += `<div class="stat-item"><div class="stat-label">Text Length</div><div class="stat-value">${result.stats.text_length}</div></div>`;
+                    html += '</div>';
+
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Error: ${escapeHtml(data.error)}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Connection Error: ${escapeHtml(error.message)}<br>Make sure the API server is running on http://localhost:5000</div>`;
+            }
+        }
+
+        // Load info
+        async function loadInfo() {
+            try {
+                // Load supported characters
+                const charsResponse = await fetch(`${API_BASE_URL}/supported-chars`);
+                const charsData = await charsResponse.json();
+
+                if (charsData.success) {
+                    document.getElementById('char-count').textContent = charsData.data.count;
+                    document.getElementById('char-list').textContent = charsData.data.characters.join('');
+                }
+
+                // Load DNA mapping
+                const mappingResponse = await fetch(`${API_BASE_URL}/dna-mapping?limit=10`);
+                const mappingData = await mappingResponse.json();
+
+                if (mappingData.success) {
+                    const tbody = document.getElementById('mapping-body');
+                    tbody.innerHTML = '';
+                    
+                    mappingData.data.char_mappings.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>'${escapeHtml(item.character)}'</td>
+                            <td>${item.dna_triplet}</td>
+                            <td>${item.binary}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                document.getElementById('char-list').innerHTML = `<div class="error">Error loading info: ${escapeHtml(error.message)}</div>`;
+            }
+        }
+
+        // Utility function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load info on page load
+        window.addEventListener('load', () => {
+            loadInfo();
+        });
+    </script>
+</body>
+</html>
