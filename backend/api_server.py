@@ -1,6 +1,6 @@
 """
 Flask API Server for DNA Cryptography System
-Connects frontend UI with main1.py SimpleDNACrypto class
+Connects frontend UI with main.py SimpleDNACrypto class
 """
 
 from flask import Flask, request, jsonify
@@ -8,7 +8,20 @@ from flask_cors import CORS
 from main import SimpleDNACrypto
 
 app = Flask(__name__)
-CORS(app, origins=["*"])  # Allow all origins (update with your Vercel URL after deploy)
+
+# Full CORS config — handles preflight OPTIONS requests properly
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"]
+}})
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
 
 # Initialize the crypto system once
 crypto = SimpleDNACrypto()
@@ -27,71 +40,38 @@ def index():
         }
     })
 
-@app.route('/api/encrypt', methods=['POST'])
+@app.route('/api/encrypt', methods=['POST', 'OPTIONS'])
 def encrypt_text():
-    """
-    Encrypt text to compressed binary key (Base64 format)
-    Returns: compressed key, DNA sequence, and compression stats
-    """
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
     try:
         data = request.get_json()
         text = data.get('text', '')
-        
         if not text:
-            return jsonify({
-                'success': False,
-                'error': 'Text is required'
-            }), 400
-        
+            return jsonify({'success': False, 'error': 'Text is required'}), 400
         result = crypto.encrypt(text)
-        # Result includes: binary_key (compressed), original_text, filtered_text,
-        # dna_sequence, original_binary_length, compressed_length, compression_ratio, stats
-        
-        return jsonify({
-            'success': True,
-            'data': result
-        })
-    
+        return jsonify({'success': True, 'data': result})
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/decrypt', methods=['POST'])
+@app.route('/api/decrypt', methods=['POST', 'OPTIONS'])
 def decrypt_binary():
-    """
-    Decrypt compressed key (Base64) or binary key to text
-    Accepts: Base64 compressed keys (new format) or binary keys (old format)
-    Returns: decrypted text, DNA sequence, and stats
-    """
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
     try:
         data = request.get_json()
         binary_key = data.get('binary_key', '')
-        
         if not binary_key:
-            return jsonify({
-                'success': False,
-                'error': 'Binary key is required'
-            }), 400
-        
+            return jsonify({'success': False, 'error': 'Binary key is required'}), 400
         result = crypto.decrypt(binary_key)
-        # Result includes: decrypted_text, dna_sequence, binary_key, compressed_key (if applicable), stats
-        
-        return jsonify({
-            'success': True,
-            'data': result
-        })
-    
+        return jsonify({'success': True, 'data': result})
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/supported-chars', methods=['GET'])
+@app.route('/api/supported-chars', methods=['GET', 'OPTIONS'])
 def get_supported_chars():
-    """Get list of supported characters"""
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
     try:
         chars = crypto.get_supported_chars()
         return jsonify({
@@ -103,18 +83,14 @@ def get_supported_chars():
             }
         })
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/dna-mapping', methods=['GET'])
+@app.route('/api/dna-mapping', methods=['GET', 'OPTIONS'])
 def get_dna_mapping():
-    """Get DNA mapping information"""
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
     try:
         limit = request.args.get('limit', 10, type=int)
-        
-        # Get first N character mappings
         char_mappings = []
         for i, (char, dna) in enumerate(list(crypto.char_to_dna.items())[:limit]):
             binary = ''.join(crypto.dna_to_binary[n] for n in dna)
@@ -123,23 +99,16 @@ def get_dna_mapping():
                 'dna_triplet': dna,
                 'binary': binary
             })
-        
-        # DNA to binary mapping
-        dna_binary_mapping = crypto.dna_to_binary
-        
         return jsonify({
             'success': True,
             'data': {
                 'char_mappings': char_mappings,
-                'dna_binary_mapping': dna_binary_mapping,
+                'dna_binary_mapping': crypto.dna_to_binary,
                 'total_mappings': len(crypto.char_to_dna)
             }
         })
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     import os
