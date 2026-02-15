@@ -1,34 +1,35 @@
 """
 Flask API Server for DNA Cryptography System
-Connects frontend UI with main.py SimpleDNACrypto class
 """
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 from main import SimpleDNACrypto
 
 app = Flask(__name__)
 
-# Full CORS config — handles preflight OPTIONS requests properly
-CORS(app, resources={r"/*": {
-    "origins": "*",
-    "methods": ["GET", "POST", "OPTIONS"],
-    "allow_headers": ["Content-Type", "Authorization"]
-}})
-
+# Manual CORS — no flask-cors, no double headers
 @app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
     return response
+
+@app.before_request
+def handle_options():
+    if request.method == 'OPTIONS':
+        from flask import make_response
+        response = make_response('', 200)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,OPTIONS'
+        return response
 
 # Initialize the crypto system once
 crypto = SimpleDNACrypto()
 
 @app.route('/')
 def index():
-    """Health check endpoint"""
     return jsonify({
         'status': 'success',
         'message': 'DNA Cryptography API is running',
@@ -113,6 +114,4 @@ def get_dna_mapping():
 if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
-    print("🚀 Starting DNA Cryptography API Server...")
-    print(f"📡 API running at: http://0.0.0.0:{port}")
     app.run(debug=False, host='0.0.0.0', port=port)
